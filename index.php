@@ -12,11 +12,836 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
     <title>Expense Tracker — Smart Personal Finance & Budget Management</title>
 
     <!-- Premium Fonts -->
-    <link rel="stylesheet" href="./assets/css/app.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
-    <link rel>
+
+    <style>
+        /* --- CSS Variables --- */
+        :root {
+            --bg-light: #ffffff;
+            --bg-offwhite: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-blue: #1d4ed8;
+            --accent-blue-hover: #1e3a8a;
+            --accent-blue-light: #eff6ff;
+            --accent-green: #16a34a;
+            --accent-red: #dc2626;
+            --border-soft: rgba(0, 0, 0, 0.06);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.07);
+            --shadow-float: 0 30px 60px -20px rgba(0, 50, 150, 0.15);
+
+            --font-serif: "Instrument Serif", Georgia, serif;
+            --font-sans: "Inter", -apple-system, sans-serif;
+            --font-hand: "Caveat", cursive;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            color: var(--text-main);
+            background-color: var(--bg-light);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        /* --- Reusable SVG Icons --- */
+        .icon {
+            display: inline-block;
+            vertical-align: middle;
+            width: 1em;
+            height: 1em;
+            stroke-width: 2;
+            stroke: currentColor;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        .icon-xs {
+            width: 13px;
+            height: 13px;
+            stroke-width: 2.2;
+        }
+
+        .icon-sm {
+            width: 16px;
+            height: 16px;
+        }
+
+        .icon-md {
+            width: 20px;
+            height: 20px;
+        }
+
+        .icon-lg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .icon-xl {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            background: linear-gradient(180deg, #3742fa 0%, #5352ed 35%, #8c7ae6 68%, #f8a5c2 100%);
+            position: relative;
+            color: #ffffff;
+            padding: 1.5rem 2rem 12rem 2rem;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* Subtle CSS stars */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 90px 40px, #ffffff, rgba(0, 0, 0, 0)),
+                radial-gradient(2.5px 2.5px at 160px 120px, #ffffff, rgba(0, 0, 0, 0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto 5rem auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-icon {
+            width: 34px;
+            height: 34px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.75rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            align-items: center;
+        }
+
+        .nav-links a {
+            opacity: 0.9;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.4rem 1.1rem;
+            border-radius: 999px;
+            opacity: 1;
+        }
+
+        .hero-content {
+            max-width: 820px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 6vw, 4.6rem);
+            font-weight: 400;
+            line-height: 1.05;
+            letter-spacing: -0.01em;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            font-weight: 400;
+            opacity: 0.95;
+            margin-bottom: 2.5rem;
+            max-width: 660px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.55;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            padding: 0.875rem 2rem;
+            border-radius: 999px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-white {
+            background-color: #ffffff;
+            color: var(--accent-blue);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.18);
+            color: #ffffff;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+        }
+
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.28);
+            transform: translateY(-2px);
+        }
+
+        .btn-blue {
+            background-color: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39);
+        }
+
+        .btn-blue:hover {
+            background-color: var(--accent-blue-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        /* --- Mockup Container (Hero Overlap) --- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .hero-mockup-wrapper {
+            margin-top: -8rem;
+            margin-bottom: 7rem;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+        }
+
+        .mockup-window {
+            width: 100%;
+            max-width: 920px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: var(--shadow-float);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            overflow: hidden;
+        }
+
+        .mockup-header {
+            background: linear-gradient(135deg, #a7b5ff 0%, #c4b5fd 50%, #fbcfe8 100%);
+            height: 220px;
+            position: relative;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .mockup-nav {
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e1b4b;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mockup-badge {
+            background: rgba(255, 255, 255, 0.85);
+            color: #065f46;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .mockup-body {
+            background: #ffffff;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .mockup-inner-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-soft);
+            max-width: 580px;
+            margin-top: -110px;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .mockup-inner-card h3 {
+            font-family: var(--font-serif);
+            font-size: 2.25rem;
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+        }
+
+        .mini-progress {
+            width: 100%;
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 999px;
+            margin: 16px 0 20px 0;
+            overflow: hidden;
+        }
+
+        .mini-progress-fill {
+            height: 100%;
+            width: 65%;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            border-radius: 999px;
+        }
+
+        .mockup-stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .mockup-stat-box {
+            background: var(--bg-offwhite);
+            border: 1px solid var(--border-soft);
+            border-radius: 10px;
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        .mockup-stat-box span {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .mockup-stat-box strong {
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        /* --- Typography Sections --- */
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3.5rem auto;
+        }
+
+        .section-header h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2.3rem, 4vw, 3.4rem);
+            font-weight: 400;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+            margin-bottom: 1.25rem;
+            color: #0f172a;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        /* --- Feature Pills Layout --- */
+        .pills-container {
+            position: relative;
+            max-width: 920px;
+            margin: 0 auto 6rem auto;
+        }
+
+        .pill-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.85rem;
+        }
+
+        .pill-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: #ffffff;
+            padding: 0.6rem 1.25rem;
+            border-radius: 999px;
+            border: 1px solid #e2e8f0;
+            font-weight: 500;
+            font-size: 0.925rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+
+        .pill-item:hover {
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .pill-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        /* Hand-drawn annotation */
+        .annotation {
+            position: absolute;
+            bottom: -48px;
+            left: 50%;
+            transform: translateX(10%);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .annotation-text {
+            font-family: var(--font-hand);
+            color: var(--accent-blue);
+            font-size: 1.35rem;
+            transform: rotate(-3deg);
+            margin-top: 24px;
+        }
+
+        /* --- Feature Zig-Zag Rows --- */
+        .feature-row {
+            display: flex;
+            align-items: center;
+            gap: 5rem;
+            margin: 7rem 0;
+        }
+
+        .feature-row.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .feature-text h3 {
+            font-family: var(--font-serif);
+            font-size: 2.4rem;
+            font-weight: 400;
+            margin-bottom: 1.25rem;
+            line-height: 1.15;
+            color: #0f172a;
+        }
+
+        .feature-text p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .feature-visual {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* UI Stack */
+        .ui-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .ui-card-sm {
+            background: #ffffff;
+            border: 1px solid var(--border-soft);
+            padding: 1.15rem;
+            border-radius: 14px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: transform 0.3s;
+        }
+
+        .ui-card-sm:hover {
+            transform: translateX(6px);
+        }
+
+        .ui-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bar-container {
+            width: 100%;
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        /* Notification Cards */
+        .ui-notifications {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 290px;
+        }
+
+        .ui-notif-card {
+            position: absolute;
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid var(--border-soft);
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ui-notif-card:nth-child(1) {
+            top: 0;
+            z-index: 3;
+            transform: scale(1);
+        }
+
+        .ui-notif-card:nth-child(2) {
+            top: 70px;
+            z-index: 2;
+            transform: scale(0.96);
+            opacity: 0.9;
+        }
+
+        .ui-notif-card:nth-child(3) {
+            top: 135px;
+            z-index: 1;
+            transform: scale(0.92);
+            opacity: 0.75;
+        }
+
+        .badge-blue {
+            background: var(--accent-blue);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* File Export Visual */
+        .ui-export-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        .export-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.25rem;
+        }
+
+        .export-table-preview {
+            width: 100%;
+            font-size: 0.8rem;
+            border-collapse: collapse;
+            margin-bottom: 1.25rem;
+        }
+
+        .export-table-preview th {
+            color: var(--text-muted);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 6px 8px;
+            text-align: left;
+        }
+
+        .export-table-preview td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #f8fafc;
+            color: var(--text-main);
+        }
+
+        /* Security Card */
+        .ui-security-card {
+            background: #fafafa;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+        }
+
+        .security-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .security-item:last-child {
+            border-bottom: none;
+        }
+
+        .sec-check-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #dcfce7;
+            color: #16a34a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* --- Divider --- */
+        hr {
+            border: none;
+            border-top: 1px dashed #cbd5e1;
+            margin: 6rem auto;
+            max-width: 800px;
+        }
+
+        /* --- 2x2 Grid --- */
+        .grid-2x2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3.5rem 3rem;
+            margin: 4rem 0 6rem 0;
+        }
+
+        .grid-card {
+            background: transparent;
+        }
+
+        .grid-card h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.25rem 0 0.75rem 0;
+            letter-spacing: -0.01em;
+            color: #0f172a;
+        }
+
+        .grid-card p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        /* --- Footer / CTA Section --- */
+        .cta-section {
+            text-align: center;
+            padding: 8rem 1.5rem 0 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--accent-blue);
+            color: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem auto;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .cta-section h2 {
+            font-family: var(--font-serif);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: #0f172a;
+        }
+
+        .cta-section p {
+            color: var(--text-muted);
+            max-width: 580px;
+            margin: 0 auto 2.5rem auto;
+            font-size: 1.15rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1000px;
+            margin: 6rem auto 3rem auto;
+            font-size: 0.925rem;
+            color: var(--text-muted);
+            text-align: left;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-links a {
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .footer-graphic {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(180deg, transparent 0%, #1e293b 100%);
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            margin-top: -100px;
+            position: relative;
+            z-index: 1;
+            transform: scaleX(1.5);
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 900px) {
+
+            .feature-row,
+            .feature-row.reverse {
+                flex-direction: column;
+                gap: 3rem;
+                text-align: center;
+            }
+
+            .grid-2x2 {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 2rem;
+                align-items: center;
+                text-align: center;
+            }
+
+            .mockup-inner-card {
+                margin-top: -60px;
+            }
+
+            .annotation {
+                display: none;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -24,7 +849,17 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
     <!-- Hero Header -->
     <section class="hero">
         <nav class="nav">
-            <div class="brand">💸 Expense Tracker</div>
+            <div class="brand">
+                <div class="brand-icon">
+                    <!-- Wallet / Finance SVG Icon -->
+                    <svg class="icon icon-md" viewBox="0 0 24 24">
+                        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                        <path d="M18 12a2 2 0 0 0 0 4h4v-4z" />
+                    </svg>
+                </div>
+                <span>Expense Tracker</span>
+            </div>
             <div class="nav-links">
                 <?php if ($isLoggedIn): ?>
                     <span style="opacity: 0.9; font-weight: 500;">Hi, <?= $userName ?></span>
@@ -44,7 +879,13 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
             <p>Gain complete visibility into your daily finances. Log transactions in seconds, set category budgets, spot spending leaks with real-time charts, and take full control without messy spreadsheets.</p>
             <div class="hero-actions">
                 <?php if ($isLoggedIn): ?>
-                    <a href="pages/dashboard.php" class="btn btn-white">Open Dashboard &rarr;</a>
+                    <a href="pages/dashboard.php" class="btn btn-white">
+                        <span>Open Dashboard</span>
+                        <svg class="icon icon-sm" viewBox="0 0 24 24">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                        </svg>
+                    </a>
                 <?php else: ?>
                     <a href="pages/register.php" class="btn btn-white">Get Started Free</a>
                     <a href="pages/login.php" class="btn btn-glass">Sign In</a>
@@ -60,7 +901,16 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
         <div class="hero-mockup-wrapper">
             <div class="mockup-window">
                 <div class="mockup-header">
-                    <div class="mockup-nav">✦ Monthly Overview — <?= date('F Y') ?></div>
+                    <div class="mockup-nav">
+                        <!-- Calendar SVG Icon -->
+                        <svg class="icon icon-sm" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        <span>Monthly Overview — <?= date('F Y') ?></span>
+                    </div>
                     <div class="mockup-badge">
                         <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
                         Budget on Track
@@ -110,36 +960,91 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
         <!-- Feature Pills -->
         <div class="pills-container">
             <div class="pill-grid">
+                <!-- Pill 1: CRUD / Edit -->
                 <div class="pill-item">
-                    <div class="pill-icon" style="background: #2563eb;">✦</div>
+                    <div class="pill-icon" style="background: #2563eb;">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                    </div>
                     <span>Instant expense logging (CRUD)</span>
                 </div>
+
+                <!-- Pill 2: Budgets / Dollar -->
                 <div class="pill-item">
-                    <div class="pill-icon" style="background: #16a34a;">$</div>
+                    <div class="pill-icon" style="background: #16a34a;">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24">
+                            <line x1="12" y1="2" x2="12" y2="22" />
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                        </svg>
+                    </div>
                     <span>Monthly category budgets</span>
                 </div>
+
+                <!-- Pill 3: Chart / Analytics -->
                 <div class="pill-item">
-                    <div class="pill-icon" style="background: #8b5cf6;">📈</div>
+                    <div class="pill-icon" style="background: #8b5cf6;">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24">
+                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                            <polyline points="17 6 23 6 23 12" />
+                        </svg>
+                    </div>
                     <span>Interactive Chart.js visual analytics</span>
                 </div>
+
+                <!-- Pill 4: Warning Badges -->
                 <div class="pill-item">
-                    <div class="pill-icon" style="background: #ef4444;">⚠️</div>
+                    <div class="pill-icon" style="background: #ef4444;">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24">
+                            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </div>
                     <span>Over-budget warning badges</span>
                 </div>
+
+                <!-- Pill 5: CSV Export -->
                 <div class="pill-item">
-                    <div class="pill-icon" style="background: #0ea5e9;">📥</div>
+                    <div class="pill-icon" style="background: #0ea5e9;">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                    </div>
                     <span>One-click CSV spreadsheet export</span>
                 </div>
+
+                <!-- Pill 6: Dark Mode / Moon -->
                 <div class="pill-item">
-                    <div class="pill-icon" style="background: #f59e0b;">🌓</div>
+                    <div class="pill-icon" style="background: #f59e0b;">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24">
+                            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                        </svg>
+                    </div>
                     <span>Dark mode & glassmorphism UI</span>
                 </div>
+
+                <!-- Pill 7: Lock / Security -->
                 <div class="pill-item">
-                    <div class="pill-icon" style="background: #10b981;">🔒</div>
+                    <div class="pill-icon" style="background: #10b981;">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                    </div>
                     <span>Bcrypt password encryption</span>
                 </div>
+
+                <!-- Pill 8: Shield / Isolation -->
                 <div class="pill-item" style="position: relative;">
-                    <div class="pill-icon" style="background: #6366f1;">🛡️</div>
+                    <div class="pill-icon" style="background: #6366f1;">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
                     <span>Multi-tenant data isolation</span>
                 </div>
             </div>
@@ -190,7 +1095,14 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
                         <div class="bar-container">
                             <div class="bar-fill" style="width: 100%; background: #dc2626;"></div>
                         </div>
-                        <span style="font-size: 0.8rem; color: #dc2626; font-weight: 500;">⚠️ Over budget by $30.00</span>
+                        <span style="font-size: 0.8rem; color: #dc2626; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">
+                            <svg class="icon icon-xs" viewBox="0 0 24 24">
+                                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                                <line x1="12" y1="9" x2="12" y2="13" />
+                                <line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                            Over budget by $30.00
+                        </span>
                     </div>
                 </div>
             </div>
@@ -205,7 +1117,13 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
             <div class="feature-visual">
                 <div class="ui-notifications">
                     <div class="ui-notif-card" style="border: 2px solid var(--accent-blue-light);">
-                        <div class="badge-blue">📊</div>
+                        <div class="badge-blue">
+                            <svg class="icon icon-md" viewBox="0 0 24 24">
+                                <line x1="18" y1="20" x2="18" y2="10" />
+                                <line x1="12" y1="20" x2="12" y2="4" />
+                                <line x1="6" y1="20" x2="6" y2="14" />
+                            </svg>
+                        </div>
                         <div>
                             <strong style="display:block; font-size: 0.95rem;">Spent vs. Budget Visualizer</strong>
                             <span style="color: var(--accent-blue); font-weight: 600; font-size: 1.1rem;">Bar & Line Chart</span>
@@ -213,14 +1131,24 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
                         </div>
                     </div>
                     <div class="ui-notif-card">
-                        <div style="width:32px; height:32px; background:#eff6ff; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#2563eb; font-weight:bold;">🍩</div>
+                        <div style="width:36px; height:36px; background:#eff6ff; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#2563eb; flex-shrink:0;">
+                            <svg class="icon icon-md" viewBox="0 0 24 24">
+                                <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                                <path d="M22 12A10 10 0 0 0 12 2v10z" />
+                            </svg>
+                        </div>
                         <div>
                             <strong style="font-size: 0.9rem; display:block;">Category Distribution</strong>
-                            <span style="font-size: 0.8rem; color: var(--text-muted);">Rent 48% • Food 25% • Transport 12%</span>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Rent 48% &bull; Food 25% &bull; Transport 12%</span>
                         </div>
                     </div>
                     <div class="ui-notif-card">
-                        <div style="width:32px; height:32px; background:#f0fdf4; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#16a34a; font-weight:bold;">✓</div>
+                        <div style="width:36px; height:36px; background:#f0fdf4; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#16a34a; flex-shrink:0;">
+                            <svg class="icon icon-md" viewBox="0 0 24 24">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
+                        </div>
                         <div>
                             <strong style="font-size: 0.9rem; display:block;">Total Savings This Month</strong>
                             <span style="font-size: 0.8rem; color: #16a34a; font-weight: 600;">+$759.50 below total budget</span>
@@ -239,7 +1167,15 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
             <div class="feature-visual">
                 <div class="ui-export-card">
                     <div class="export-header">
-                        <div style="width:40px; height:40px; background:#e0f2fe; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.25rem;">📄</div>
+                        <div style="width:40px; height:40px; background:#e0f2fe; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#0284c7; flex-shrink:0;">
+                            <svg class="icon icon-lg" viewBox="0 0 24 24">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="8" y1="13" x2="16" y2="13" />
+                                <line x1="8" y1="17" x2="16" y2="17" />
+                                <line x1="10" y1="9" x2="8" y2="9" />
+                            </svg>
+                        </div>
                         <div>
                             <strong style="display:block; font-size:0.95rem;">expenses-export.csv</strong>
                             <span style="font-size:0.8rem; color:var(--text-muted);">Instant spreadsheet download</span>
@@ -271,7 +1207,12 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
                             </tr>
                         </tbody>
                     </table>
-                    <div style="font-size: 0.8rem; color: #0284c7; font-weight: 600;">✓ Formatted for Excel, Sheets, & Accounting</div>
+                    <div style="font-size: 0.8rem; color: #0284c7; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Formatted for Excel, Sheets, & Accounting
+                    </div>
                 </div>
             </div>
             <div class="feature-text">
@@ -284,23 +1225,44 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
         <div class="feature-row reverse">
             <div class="feature-visual">
                 <div class="ui-security-card">
-                    <div style="position: absolute; top: 1rem; right: 1rem; background: #16a34a; color: white; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600;">Protected ✓</div>
+                    <div style="position: absolute; top: 1rem; right: 1rem; background: #16a34a; color: white; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                        <svg class="icon icon-xs" viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Protected
+                    </div>
                     <h5 style="font-size: 1rem; margin-bottom: 1rem; color:#0f172a;">Data Security Architecture</h5>
                     
                     <div class="security-item">
-                        <span class="sec-check">✓</span>
+                        <div class="sec-check-icon">
+                            <svg class="icon icon-xs" viewBox="0 0 24 24">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                        </div>
                         <span>Bcrypt password hashing (cost factor 12)</span>
                     </div>
                     <div class="security-item">
-                        <span class="sec-check">✓</span>
+                        <div class="sec-check-icon">
+                            <svg class="icon icon-xs" viewBox="0 0 24 24">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                        </div>
                         <span>PDO prepared queries (SQLi immune)</span>
                     </div>
                     <div class="security-item">
-                        <span class="sec-check">✓</span>
+                        <div class="sec-check-icon">
+                            <svg class="icon icon-xs" viewBox="0 0 24 24">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                        </div>
                         <span>Strict user-level data isolation</span>
                     </div>
                     <div class="security-item">
-                        <span class="sec-check">✓</span>
+                        <div class="sec-check-icon">
+                            <svg class="icon icon-xs" viewBox="0 0 24 24">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                        </div>
                         <span>Session fixation prevention</span>
                     </div>
                 </div>
@@ -320,26 +1282,52 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
         </div>
 
         <div class="grid-2x2">
+            <!-- Grid Card 1: Fast CRUD -->
             <div class="grid-card">
-                <div class="pill-icon" style="background: #2563eb; width: 36px; height: 36px; font-size: 1rem;">⚡</div>
+                <div class="pill-icon" style="background: #2563eb; width: 38px; height: 38px;">
+                    <svg class="icon icon-md" viewBox="0 0 24 24">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                    </svg>
+                </div>
                 <h4>Lightning-Fast CRUD</h4>
                 <p>Log an expense in seconds. Quick inline edit and delete actions keep your transaction history accurate and up-to-date effortlessly.</p>
             </div>
 
+            <!-- Grid Card 2: Budgets -->
             <div class="grid-card">
-                <div class="pill-icon" style="background: #16a34a; width: 36px; height: 36px; font-size: 1rem;">🎯</div>
+                <div class="pill-icon" style="background: #16a34a; width: 38px; height: 38px;">
+                    <svg class="icon icon-md" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <circle cx="12" cy="12" r="6" />
+                        <circle cx="12" cy="12" r="2" />
+                    </svg>
+                </div>
                 <h4>Category-Level Budgeting</h4>
                 <p>Set specific monthly targets per category. Unique relational constraints ensure you never get duplicated budgets for the same period.</p>
             </div>
 
+            <!-- Grid Card 3: Warnings -->
             <div class="grid-card">
-                <div class="pill-icon" style="background: #dc2626; width: 36px; height: 36px; font-size: 1rem;">⚠️</div>
+                <div class="pill-icon" style="background: #dc2626; width: 38px; height: 38px;">
+                    <svg class="icon icon-md" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                </div>
                 <h4>Instant Spending Warnings</h4>
                 <p>Clear visual alerts highlight whenever a category's total expenses cross the defined threshold, helping you adjust your spending in real time.</p>
             </div>
 
+            <!-- Grid Card 4: Responsive -->
             <div class="grid-card">
-                <div class="pill-icon" style="background: #8b5cf6; width: 36px; height: 36px; font-size: 1rem;">📱</div>
+                <div class="pill-icon" style="background: #8b5cf6; width: 38px; height: 38px;">
+                    <svg class="icon icon-md" viewBox="0 0 24 24">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                        <line x1="8" y1="21" x2="16" y2="21" />
+                        <line x1="12" y1="17" x2="12" y2="21" />
+                    </svg>
+                </div>
                 <h4>Responsive & Dark Mode</h4>
                 <p>Check and log your finances on your desktop, tablet, or phone with a tailored user interface and built-in theme support.</p>
             </div>
@@ -349,11 +1337,23 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
 
     <!-- CTA & Footer -->
     <footer class="cta-section">
-        <div class="cta-icon">💸</div>
+        <div class="cta-icon">
+            <svg class="icon icon-xl" viewBox="0 0 24 24">
+                <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                <path d="M18 12a2 2 0 0 0 0 4h4v-4z" />
+            </svg>
+        </div>
         <h2>Take control of your personal<br>finances today.</h2>
         <p>Start tracking your expenses and mastering your monthly budgets in a clean, private, and intuitive dashboard.</p>
         <?php if ($isLoggedIn): ?>
-            <a href="pages/dashboard.php" class="btn btn-blue" style="margin-bottom: 2rem;">Go to Dashboard</a>
+            <a href="pages/dashboard.php" class="btn btn-blue" style="margin-bottom: 2rem;">
+                <span>Go to Dashboard</span>
+                <svg class="icon icon-sm" viewBox="0 0 24 24">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                </svg>
+            </a>
         <?php else: ?>
             <a href="pages/register.php" class="btn btn-blue" style="margin-bottom: 2rem;">Create Free Account</a>
         <?php endif; ?>
@@ -374,7 +1374,7 @@ $userName   = htmlspecialchars($_SESSION['user_name'] ?? 'User');
         </div>
 
         <div style="font-size: 0.8rem; color: var(--text-muted); position: relative; z-index: 2; text-align: left; max-width: 1000px; margin: 0 auto 2rem auto;">
-            All rights reserved, <?= date('Y') ?> • Expense Tracker
+            All rights reserved, <?= date('Y') ?> &bull; Expense Tracker
         </div>
 
         <!-- Decorative Bottom Graphic -->
